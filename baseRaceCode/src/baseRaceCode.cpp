@@ -23,8 +23,8 @@ const int startDelay = 1000;
 const int OLED_RESET = -1;
 Adafruit_NeoPixel pixel(PIXELCOUNT,SPI1,WS2812B);
 Adafruit_NeoPixel ring(12,SPI,WS2812B);
-Button greenButton(D3);
-Button blueButton(D4);
+Button blueButton(D3);
+Button redButton(D4);
 Button encButton(A0);
 const int encGreen = D18;
 const int encRed = D16;
@@ -37,6 +37,8 @@ void ringFill(int startPixel, int endPixel, int colorPixel);
 float startTime, startLapTime1, startLapTime2, lapTime, currentTime, lastTime, finalTime1, finalTime2;
 bool autoManual;
 bool pitstop;
+int carColor[] = {blue,red,green,yellow,purple};
+int carColor1, carColor2;
 
 
 
@@ -66,18 +68,33 @@ void setup() {
   digitalWrite(encGreen,LOW);
   digitalWrite(encRed,LOW);
   autoManual = true;
+
 }
 
 
 void loop() {
-
+  int j=1;
+  int i=0;
   if(encButton.isClicked()){
     autoManual = !autoManual;
   }
   while(autoManual == true){
-    digitalWrite(encGreen,LOW);
-    digitalWrite(encRed,HIGH);
-    if(greenButton.isClicked()){
+
+  digitalWrite(encGreen,LOW);
+  digitalWrite(encRed,HIGH);
+    if(blueButton.isClicked()){
+        carColor1 = carColor[random(5)];
+  carColor2 = carColor1;
+  while(carColor1 == carColor2){
+    carColor2 = carColor[random(5)];
+  }
+  pixel.setPixelColor((int)i%62,carColor1);
+  pixel.setPixelColor((int)j%62,carColor2);
+  pixel.show();
+      displayL.clearDisplay();
+      displayL.display();
+      displayR.clearDisplay();
+      displayR.display();
       ringFill(0,3,red);
       delay(startDelay);
       ringFill(0,7,red);
@@ -89,7 +106,6 @@ void loop() {
       startLapTime2 = millis();
       startTime = millis();
       pixelRace();
-      Serial.printf("Race Start\n");
       autoManual =false;
   }
   if(encButton.isClicked()){
@@ -99,7 +115,11 @@ void loop() {
   while(autoManual == false){
     digitalWrite(encRed,LOW);
     digitalWrite(encGreen,HIGH);
-    if(greenButton.isClicked()){
+    if(blueButton.isClicked()){
+      displayL.clearDisplay();
+      displayL.display();
+      displayR.clearDisplay();
+      displayR.display();
       ringFill(0,3,red);
       delay(startDelay);
       ringFill(0,7,red);
@@ -110,7 +130,6 @@ void loop() {
       startTime = millis();
       pixelManualRace();
     }
-    Serial.printf("Manual Mode On\n");
     if(encButton.isClicked()){
     autoManual = !autoManual;
     }
@@ -118,23 +137,22 @@ void loop() {
 }
 
  void pixelRace() {
-  int color1, color2;
+
   float speed1, speed2, j,i;
   int k;
   int m =1;
   int n =1;
-  color1 = random(0x000000,0xFFFFFF);
-  color2 = random(0x000000,0xFFFFFF);
+
   speed1 = random(75,125)/100.0;
   speed2 = random(75,125)/100.0;
-  j=0;
+  j=1;
   k=0;
   i=0;
   while(i<310 || j<310) {
     k++;
     pixel.clear();
-    pixel.setPixelColor((int)i%62,red);
-    pixel.setPixelColor((int)j%62,blue);
+    pixel.setPixelColor((int)i%62,carColor1);
+    pixel.setPixelColor((int)j%62,carColor2);
     pixel.show();
     currentTime = millis();
     if(currentTime-lastTime>115){
@@ -201,10 +219,10 @@ void loop() {
   }
 
     if(j > i) {
-      pixelFill(blue);
+      pixelFill(carColor2);
     }
     else{
-      pixelFill(red);
+      pixelFill(carColor1);
     }
 
 }
@@ -240,10 +258,10 @@ void ringFill(int startPixel, int endPixel, int colorPixel){
     pixel.setPixelColor((int)j%62,blue);
     pixel.show();
     currentTime = millis();
-    if(greenButton.isClicked()){
+    if(blueButton.isClicked()){
       j++;
     }
-    if(blueButton.isClicked()){
+    if(redButton.isClicked()){
       i++;
     }
     if(k==5){
@@ -251,7 +269,7 @@ void ringFill(int startPixel, int endPixel, int colorPixel){
       ring.show();
     }
     
-    if((int)i == 124){
+    if((int)i >= 124){
       displayL.clearDisplay();
       displayL.display();
       currentTime = millis();
@@ -259,9 +277,10 @@ void ringFill(int startPixel, int endPixel, int colorPixel){
         displayL.setCursor(0,30);
         displayL.printf("Final %0.3f",finalTime1);
         displayL.display();
+        break;
       }
        
-    if((int)j == 124){
+    if((int)j >= 124){
       displayR.clearDisplay();
       displayR.display();
       currentTime = millis();
@@ -269,6 +288,7 @@ void ringFill(int startPixel, int endPixel, int colorPixel){
         displayR.setCursor(0,30);
         displayR.printf("Final %0.3f",finalTime2);
         displayR.display();
+        break;
       }
       }
     //Serial.printf("i = %f, j = %f, k = %i, Speed1 = %f, Speed2 = %f\n",i,j,k,speed1,speed2);
