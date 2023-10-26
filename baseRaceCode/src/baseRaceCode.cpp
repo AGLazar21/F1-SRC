@@ -99,8 +99,18 @@ void loop() {
   while(autoManual == false){
     digitalWrite(encRed,LOW);
     digitalWrite(encGreen,HIGH);
+    if(greenButton.isClicked()){
+      ringFill(0,3,red);
+      delay(startDelay);
+      ringFill(0,7,red);
+      delay(startDelay);
+      ringFill(0,11,red);
+      delay(startDelay);
+      ringFill(0,11,green);
+      startTime = millis();
+      pixelManualRace();
+    }
     Serial.printf("Manual Mode On\n");
-    pixelManualRace();
     if(encButton.isClicked()){
     autoManual = !autoManual;
     }
@@ -196,6 +206,7 @@ void loop() {
     else{
       pixelFill(red);
     }
+
 }
 void pixelFill(int pixColor) {
   int i;
@@ -215,16 +226,14 @@ void ringFill(int startPixel, int endPixel, int colorPixel){
 
  void pixelManualRace() {
   int color1, color2;
-  j,i;
+  int j,i;
   int k;
-  int m =1;
-  int n =1;
   color1 = random(0x000000,0xFFFFFF);
   color2 = random(0x000000,0xFFFFFF);
   j=0;
   k=0;
   i=0;
-  while(i<124| j<124) {
+  while(i<124 || j<124) {
     k++;
     pixel.clear();
     pixel.setPixelColor((int)i%62,red);
@@ -237,68 +246,36 @@ void ringFill(int startPixel, int endPixel, int colorPixel){
     if(blueButton.isClicked()){
       i++;
     }
-    if (k%18==0){
-      speed1 = random(75,125)/100.0;
-      speed2 = random(75,125)/100.0;
-    }
-    if(k==20){
+    if(k==5){
       ring.clear();
       ring.show();
     }
     
-    if((int)i%62 == 0){
+    if((int)i == 124){
       displayL.clearDisplay();
       displayL.display();
       currentTime = millis();
-      lapTime = (currentTime-startLapTime1)/1000.0;
-      if (m==5){
-        displayL.clearDisplay();
-        displayL.display();
-        currentTime = millis();
         finalTime1 = (currentTime - startTime)/1000.0;
         displayL.setCursor(0,30);
         displayL.printf("Final %0.3f",finalTime1);
         displayL.display();
       }
-      if(lapTime > 3 && m <=4){
-        displayL.setCursor(0,30);
-        displayL.printf("Lap %i: %0.3f",m,lapTime);
-        displayL.display();
-        // Serial.printf("Lap %i : %f\n",lapTime);
-        startLapTime1 = millis();
-        m++;
-      }  
-    }
-    if((int)j%62 == 0){
+       
+    if((int)j == 124){
       displayR.clearDisplay();
       displayR.display();
       currentTime = millis();
-      lapTime = (currentTime-startLapTime2)/1000.0;
-      if (n==5){
-        displayR.clearDisplay();
-        displayR.display();
-        currentTime = millis();
         finalTime2 = (currentTime - startTime)/1000.0;
         displayR.setCursor(0,30);
         displayR.printf("Final %0.3f",finalTime2);
         displayR.display();
       }
-      if(lapTime > 3 && n <=4){
-        displayR.setCursor(0,30);
-        displayR.printf("Lap %i: %0.3f",n,lapTime);
-        displayR.display();
-       // Serial.printf("Lap %i : %f\n",lapTime);
-        startLapTime2 = millis();
-        n++;
-        }
       }
     //Serial.printf("i = %f, j = %f, k = %i, Speed1 = %f, Speed2 = %f\n",i,j,k,speed1,speed2);
-  }
-
     if(j > i) {
       pixelFill(blue);
     }
     else{
       pixelFill(red);
     }
- }
+    }
