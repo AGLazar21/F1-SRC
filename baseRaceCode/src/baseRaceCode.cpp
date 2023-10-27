@@ -17,6 +17,7 @@
 
 SYSTEM_MODE(MANUAL);
 SYSTEM_THREAD(ENABLED);
+const int MYWEMO = 3;
 const int PIXELCOUNT = 63;
 const int PIXELDELAY =115;
 const int startDelay = 1000;
@@ -85,9 +86,8 @@ void loop() {
     autoManual = !autoManual;
   }
   while(autoManual == true){
-
-  digitalWrite(encGreen,LOW);
-  digitalWrite(encRed,HIGH);
+    digitalWrite(encGreen,LOW);
+    digitalWrite(encRed,HIGH);
     if(blueButton.isClicked()){
       p = random(0,4);
       carColor1 = carColor[p];
@@ -121,6 +121,7 @@ void loop() {
   }
   }
   while(autoManual == false){
+    wemoWrite(MYWEMO,LOW);
     digitalWrite(encRed,LOW);
     digitalWrite(encGreen,HIGH);
     if(blueButton.isClicked()){
@@ -168,15 +169,18 @@ void loop() {
       j = j+speed2;
       lastTime = currentTime;
     }
-    if (k%18==0){
+    if (k%10==0){
       speed1 = random(75,125)/100.0;
       speed2 = random(75,125)/100.0;
     }
-    if(k==20){
+    if(k==30){
       ring.clear();
       ring.show();
     }
-    
+    if(k == 280){
+      Serial.printf("Turning on Wemo %i\n",MYWEMO);
+      wemoWrite(MYWEMO,HIGH);
+    }
     if((int)i%62 == 0){
       displayL.clearDisplay();
       displayL.display();
@@ -280,7 +284,10 @@ void ringFill(int startPixel, int endPixel, int colorPixel){
       ring.clear();
       ring.show();
     }
-    
+    if(i || j == 100){
+      Serial.printf("Turning on Wemo %i\n",MYWEMO);
+      wemoWrite(MYWEMO,HIGH);
+    }
     if((int)i >= 124){
       displayL.clearDisplay();
       displayL.display();
