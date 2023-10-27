@@ -15,7 +15,7 @@
 #include <Encoder.h>
 
 
-SYSTEM_MODE(SEMI_AUTOMATIC);
+SYSTEM_MODE(MANUAL);
 SYSTEM_THREAD(ENABLED);
 const int PIXELCOUNT = 63;
 const int PIXELDELAY =115;
@@ -34,11 +34,14 @@ void pixelRace();
 void pixelManualRace();
 void pixelFill(int pixColor);
 void ringFill(int startPixel, int endPixel, int colorPixel);
+void hueFill(int hueFillColor);
 float startTime, startLapTime1, startLapTime2, lapTime, currentTime, lastTime, finalTime1, finalTime2;
 bool autoManual;
 bool pitstop;
 int carColor[] = {blue,red,green,yellow,purple};
-int carColor1, carColor2;
+int carHueColor[] = {HueBlue,HueRed,HueGreen,HueYellow,HueViolet};
+int carColor1, carColor2, p, b;
+int BULB;
 
 
 
@@ -68,7 +71,10 @@ void setup() {
   digitalWrite(encGreen,LOW);
   digitalWrite(encRed,LOW);
   autoManual = true;
-
+  WiFi.on();
+  WiFi.clearCredentials();
+  WiFi.setCredentials("IoTNetwork");
+  WiFi.connect();
 }
 
 
@@ -83,10 +89,12 @@ void loop() {
   digitalWrite(encGreen,LOW);
   digitalWrite(encRed,HIGH);
     if(blueButton.isClicked()){
-        carColor1 = carColor[random(5)];
-  carColor2 = carColor1;
-  while(carColor1 == carColor2){
-    carColor2 = carColor[random(5)];
+      p = random(0,4);
+      carColor1 = carColor[p];
+      carColor2 = carColor1;
+      while(carColor1 == carColor2){
+        b = random(0,4);
+        carColor2 = carColor[b];
   }
   pixel.setPixelColor((int)i%62,carColor1);
   pixel.setPixelColor((int)j%62,carColor2);
@@ -220,9 +228,13 @@ void loop() {
 
     if(j > i) {
       pixelFill(carColor2);
+      hueFill(carHueColor[b]);
+      Serial.printf("%i\n",b);
     }
     else{
       pixelFill(carColor1);
+      hueFill(carHueColor[p]);
+      Serial.printf("%i\n",p);
     }
 
 }
@@ -299,3 +311,9 @@ void ringFill(int startPixel, int endPixel, int colorPixel){
       pixelFill(red);
     }
     }
+
+  void hueFill(int hueFillColor) {
+    for(BULB=1;BULB<7;BULB++) {
+    setHue(BULB,true,hueFillColor,180,255);
+    }
+  }
