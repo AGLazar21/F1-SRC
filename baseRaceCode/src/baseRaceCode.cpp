@@ -158,7 +158,6 @@ void loop() {
   k=0;
   i=0;
   while(i<310 || j<310) {
-    k++;
     pixel.clear();
     pixel.setPixelColor((int)i%62,carColor1);
     pixel.setPixelColor((int)j%62,carColor2);
@@ -168,12 +167,13 @@ void loop() {
       i = i+speed1;
       j = j+speed2;
       lastTime = currentTime;
+      k++;
     }
     if (k%10==0){
       speed1 = random(75,125)/100.0;
       speed2 = random(75,125)/100.0;
     }
-    if(k==30){
+    if(k==80){
       ring.clear();
       ring.show();
     }
@@ -268,7 +268,7 @@ void ringFill(int startPixel, int endPixel, int colorPixel){
   k=0;
   i=0;
   while(i<124 || j<124) {
-    k++;
+    
     pixel.clear();
     pixel.setPixelColor((int)i%62,red);
     pixel.setPixelColor((int)j%62,blue);
@@ -276,6 +276,7 @@ void ringFill(int startPixel, int endPixel, int colorPixel){
     currentTime = millis();
     if(blueButton.isClicked()){
       j++;
+      k++;
     }
     if(redButton.isClicked()){
       i++;
@@ -284,7 +285,7 @@ void ringFill(int startPixel, int endPixel, int colorPixel){
       ring.clear();
       ring.show();
     }
-    if(i || j == 100){
+    if(k==100){
       Serial.printf("Turning on Wemo %i\n",MYWEMO);
       wemoWrite(MYWEMO,HIGH);
     }
