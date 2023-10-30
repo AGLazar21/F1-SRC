@@ -10,5 +10,5 @@ As a huge F1 fan, I wanted to design and build a smart room, controller, inspire
 
 **Manual Mode** By clicking the encoder, you can switch from automatic mode to manual mode, where the second button comes into play. In manual mode, the user plus a friend can race each other other around two laps of the IOT Grand Prix to compete and see who is faster. One click of the users button increases the position of the same colored neo Pixel LED and the first to complete two full laps is crowned the Victor. Similar to the automatic mode the track and hue lights change to the color of the winner, as well as the OLEDs displaying the total time taken to complete the two laps.
 
-###Links 
+### Links 
 For full view of project, check out [IoT Grand Prix] on Hackster!(https://www.hackster.io/adam-lazar/the-iot-grand-prix-d8a595}
